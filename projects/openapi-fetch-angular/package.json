@@ -1,7 +1,7 @@
 {
   "name": "openapi-fetch-angular",
   "description": "Fast, typesafe fetch client for your OpenAPI schema. Works with Angular HTTPClient API.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "author": "Luna Simons <luna@bddvlpr.com> (https://bddvlpr.com)",
   "contributors": [
