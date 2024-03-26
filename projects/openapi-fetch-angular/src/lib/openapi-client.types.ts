@@ -10,6 +10,7 @@ import {
   ResponseObjectMap,
   SuccessResponse,
 } from 'openapi-typescript-helpers';
+import { Observable } from 'rxjs';
 
 export type QuerySerializer<T> = (
   query: T extends { parameters: any }
@@ -80,20 +81,20 @@ export type MaybeOptionalInit<P extends PathMethods, M extends keyof P> =
 export type FetchResponse<T> =
   | {
       data: FilterKeys<SuccessResponse<ResponseObjectMap<T>>, MediaType>;
-      error?: never;
+      error: never;
       response: HttpResponse<
         FilterKeys<SuccessResponse<ResponseObjectMap<T>>, MediaType>
       >;
     }
   | {
-      data?: never;
+      data: never;
       error: FilterKeys<ErrorResponse<ResponseObjectMap<T>>, MediaType>;
       response: HttpResponse<
         FilterKeys<ErrorResponse<ResponseObjectMap<T>>, MediaType>
       >;
     };
 
-export type ClientMethod<
+export type ClientPromiseMethod<
   Paths extends Record<string, PathMethods>,
   M extends HttpMethod,
 > = <
@@ -103,3 +104,14 @@ export type ClientMethod<
   url: P,
   ...init: I
 ) => Promise<FetchResponse<Paths[P][M]>>;
+
+export type ClientObservableMethod<
+  Paths extends Record<string, PathMethods>,
+  M extends HttpMethod,
+> = <
+  P extends PathsWithMethod<Paths, M>,
+  I extends MaybeOptionalInit<Paths[P], M>,
+>(
+  url: P,
+  ...init: I
+) => Observable<FetchResponse<Paths[P][M]>>;
