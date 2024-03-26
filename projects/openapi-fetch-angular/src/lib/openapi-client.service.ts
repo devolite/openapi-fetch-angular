@@ -186,7 +186,7 @@ export abstract class OpenAPIClientService<Paths extends {}> {
 
     this.put = ((url, init) => {
       return coreObservableFetch(url, { ...init, method: 'PUT' });
-    }) as ClientObservableMethod<Paths, 'get'>;
+    }) as ClientObservableMethod<Paths, 'put'>;
     this.putPromise = (async (url, init) => {
       return corePromiseFetch(url, { ...init, method: 'PUT' });
     }) as ClientPromiseMethod<Paths, 'put'>;
