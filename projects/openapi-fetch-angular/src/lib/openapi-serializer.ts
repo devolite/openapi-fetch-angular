@@ -7,7 +7,7 @@ import {
 const PATH_PARAM_RE = /\{[^{}]+\}/g;
 
 export const createQuerySerializer = <T = unknown>(
-  options?: QuerySerializerOptions
+  options?: QuerySerializerOptions,
 ): ((queryParams: T) => string) => {
   return function querySerializer(queryParams) {
     const search = [];
@@ -24,7 +24,7 @@ export const createQuerySerializer = <T = unknown>(
               explode: true,
               ...options?.array,
               allowReserved: options?.allowReserved || false,
-            })
+            }),
           );
           continue;
         }
@@ -35,7 +35,7 @@ export const createQuerySerializer = <T = unknown>(
               explode: true,
               ...options?.object,
               allowReserved: options?.allowReserved || false,
-            })
+            }),
           );
           continue;
         }
@@ -59,7 +59,7 @@ export const serializeArrayParam = (
       | 'pipeDelimited';
     explode: boolean;
     allowReserved?: boolean;
-  }
+  },
 ): string => {
   if (!Array.isArray(value)) {
     return '';
@@ -110,7 +110,7 @@ export const serializeArrayParam = (
     for (const v of value) {
       if (options.style === 'simple' || options.style === 'label') {
         values.push(
-          options.allowReserved === true ? v : encodeURIComponent(v as string)
+          options.allowReserved === true ? v : encodeURIComponent(v as string),
         );
       } else {
         values.push(serializePrimitiveParam(name, v as string, options));
@@ -125,14 +125,14 @@ export const serializeArrayParam = (
 export const serializePrimitiveParam = (
   name: string,
   value: string,
-  options?: { allowReserved?: boolean }
+  options?: { allowReserved?: boolean },
 ): string => {
   if (value === undefined || value === null) {
     return '';
   }
   if (typeof value === 'object') {
     throw new Error(
-      `Deeply-nested arrays/objects aren’t supported. Provide your own \`querySerializer()\` to handle these.`
+      `Deeply-nested arrays/objects aren’t supported. Provide your own \`querySerializer()\` to handle these.`,
     );
   }
   return `${name}=${
@@ -147,7 +147,7 @@ export const serializeObjectParam = (
     style: 'simple' | 'label' | 'matrix' | 'form' | 'deepObject';
     explode: boolean;
     allowReserved?: boolean;
-  }
+  },
 ): string => {
   if (!value || typeof value !== 'object') {
     return '';
@@ -168,7 +168,7 @@ export const serializeObjectParam = (
         k,
         options.allowReserved === true
           ? value[k]
-          : encodeURIComponent(value[k] as string)
+          : encodeURIComponent(value[k] as string),
       );
     }
     const final = values.join(',');
@@ -191,7 +191,7 @@ export const serializeObjectParam = (
   for (const k in value) {
     const finalName = options.style === 'deepObject' ? `${name}[${k}]` : k;
     values.push(
-      serializePrimitiveParam(finalName, value[k] as string, options)
+      serializePrimitiveParam(finalName, value[k] as string, options),
     );
   }
   const final = values.join(joiner);
@@ -219,7 +219,7 @@ export const mergeHeaders = (
 
 export const defaultPathSerializer = (
   pathname: string,
-  pathParams: Record<string, unknown>
+  pathParams: Record<string, unknown>,
 ): string => {
   let nextURL = pathname;
   for (const match of pathname.match(PATH_PARAM_RE) ?? []) {
@@ -254,7 +254,7 @@ export const defaultPathSerializer = (
     if (Array.isArray(value)) {
       nextURL = nextURL.replace(
         match,
-        serializeArrayParam(name, value, { style, explode })
+        serializeArrayParam(name, value, { style, explode }),
       );
       continue;
     }
@@ -264,20 +264,20 @@ export const defaultPathSerializer = (
         serializeObjectParam(name, value as Record<string, unknown>, {
           style,
           explode,
-        })
+        }),
       );
       continue;
     }
     if (style === 'matrix') {
       nextURL = nextURL.replace(
         match,
-        `;${serializePrimitiveParam(name, value as string)}`
+        `;${serializePrimitiveParam(name, value as string)}`,
       );
       continue;
     }
     nextURL = nextURL.replace(
       match,
-      style === 'label' ? `.${value as string}` : (value as string)
+      style === 'label' ? `.${value as string}` : (value as string),
     );
     continue;
   }
@@ -293,7 +293,7 @@ export const createFinalURL = <O>(
       path?: Record<string, unknown>;
     };
     querySerializer: QuerySerializer<O>;
-  }
+  },
 ): string => {
   let finalURL = `${options.baseUrl}${pathname}`;
   if (options.params?.path) {

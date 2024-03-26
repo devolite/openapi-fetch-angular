@@ -14,7 +14,7 @@ import {
 export type QuerySerializer<T> = (
   query: T extends { parameters: any }
     ? NonNullable<T['parameters']['query']>
-    : Record<string, unknown>
+    : Record<string, unknown>,
 ) => string;
 
 export type PathMethods = Partial<Record<HttpMethod, {}>>;
@@ -56,11 +56,12 @@ export type QuerySerializerOptions = {
   allowReserved?: boolean;
 };
 
-export type RequestBodyOption<T> = OperationRequestBodyContent<T> extends never
-  ? { body?: never }
-  : undefined extends OperationRequestBodyContent<T>
-  ? { body?: OperationRequestBodyContent<T> }
-  : { body: OperationRequestBodyContent<T> };
+export type RequestBodyOption<T> =
+  OperationRequestBodyContent<T> extends never
+    ? { body?: never }
+    : undefined extends OperationRequestBodyContent<T>
+      ? { body?: OperationRequestBodyContent<T> }
+      : { body: OperationRequestBodyContent<T> };
 
 export type RequestOptions<T> = ParamsOption<T> &
   RequestBodyOption<T> & {
@@ -71,12 +72,10 @@ export type RequestOptions<T> = ParamsOption<T> &
 export type FetchOptions<T> = RequestOptions<T> &
   Partial<Omit<HttpRequest<T>, 'body' | 'headers' | 'params'>>;
 
-export type MaybeOptionalInit<
-  P extends PathMethods,
-  M extends keyof P
-> = HasRequiredKeys<FetchOptions<FilterKeys<P, M>>> extends never
-  ? [(FetchOptions<FilterKeys<P, M>> | undefined)?]
-  : [FetchOptions<FilterKeys<P, M>>];
+export type MaybeOptionalInit<P extends PathMethods, M extends keyof P> =
+  HasRequiredKeys<FetchOptions<FilterKeys<P, M>>> extends never
+    ? [(FetchOptions<FilterKeys<P, M>> | undefined)?]
+    : [FetchOptions<FilterKeys<P, M>>];
 
 export type FetchResponse<T> =
   | {
@@ -96,10 +95,10 @@ export type FetchResponse<T> =
 
 export type ClientMethod<
   Paths extends Record<string, PathMethods>,
-  M extends HttpMethod
+  M extends HttpMethod,
 > = <
   P extends PathsWithMethod<Paths, M>,
-  I extends MaybeOptionalInit<Paths[P], M>
+  I extends MaybeOptionalInit<Paths[P], M>,
 >(
   url: P,
   ...init: I

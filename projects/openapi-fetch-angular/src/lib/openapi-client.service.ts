@@ -82,11 +82,11 @@ export abstract class OpenAPIClientService<Paths extends {}> {
         requestInit.method as any,
         createFinalURL(url, { baseUrl, params, querySerializer }),
         requestInit.body ?? null,
-        requestInit
+        requestInit,
       );
 
       const response = (await lastValueFrom(
-        http.request(request)
+        http.request(request),
       )) as HttpResponse<unknown>;
 
       return response.ok
