@@ -1,5 +1,6 @@
 import {
   HttpClient,
+  HttpErrorResponse,
   HttpHeaders,
   HttpRequest,
   HttpResponse,
@@ -16,7 +17,7 @@ import {
   createQuerySerializer,
   mergeHeaders,
 } from './openapi-serializer';
-import { filter, lastValueFrom, map } from 'rxjs';
+import { catchError, filter, lastValueFrom, map, of } from 'rxjs';
 
 export const DEFAULT_HEADERS = new HttpHeaders({
   'Content-Type': 'application/json',
@@ -101,25 +102,32 @@ export abstract class OpenAPIClientService<Paths extends {}> {
         requestInit,
       );
 
-      return http.request(request).pipe(
-        filter((response) => response instanceof HttpResponse),
-        map((response) => {
-          if (!(response instanceof HttpResponse)) {
-            throw new Error(
-              'Invalid response! This should not never happen, please report this issue.',
-            );
-          }
-          return response.ok
-            ? {
-                data: response.body,
-                response,
-              }
-            : {
-                error: response.body,
-                response,
-              };
-        }),
-      );
+      return http
+        .request(request)
+        .pipe(
+          filter((response) => response instanceof HttpResponse),
+          map((response) => {
+            if (!(response instanceof HttpResponse)) {
+              throw new Error(
+                'Invalid response! This should not never happen, please report this issue.',
+              );
+            }
+            return response.ok
+              ? {
+                  data: response.body,
+                  response,
+                }
+              : {
+                  error: response.body,
+                  response,
+                };
+          }),
+        )
+        .pipe(
+          catchError((response: HttpErrorResponse) =>
+            of({ error: response.error, response }),
+          ),
+        );
     };
 
     const corePromiseFetch = async (
@@ -162,19 +170,28 @@ export abstract class OpenAPIClientService<Paths extends {}> {
         requestInit,
       );
 
-      const response = (await lastValueFrom(
-        http.request(request),
-      )) as HttpResponse<unknown>;
+      try {
+        const response = (await lastValueFrom(
+          http.request(request),
+        )) as HttpResponse<unknown>;
 
-      return response.ok
-        ? {
-            data: response.body,
-            response,
-          }
-        : {
-            error: response.body,
-            response,
-          };
+        return response.ok
+          ? {
+              data: response.body,
+              response,
+            }
+          : {
+              error: response.body,
+              response,
+            };
+      } catch (error: unknown) {
+        return error instanceof HttpErrorResponse
+          ? {
+              error: error.error,
+              response: error,
+            }
+          : { error, response: error };
+      }
     };
 
     this.get = ((url, init) => {
