@@ -1,0 +1,34 @@
+{
+  "name": "openapi-fetch-angular",
+  "description": "Fast, typesafe fetch client for your OpenAPI schema. Works with Angular HTTPClient API.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "Luna Simons <luna@bddvlpr.com> (https://bddvlpr.com)",
+  "contributors": [
+    "Drew Powers <drew@pow.rs> (https://pow.rs)"
+  ],
+  "keywords": [
+    "openapi",
+    "swagger",
+    "rest",
+    "api",
+    "oapi_3",
+    "oapi_3_1",
+    "typescript",
+    "fetch",
+    "angular"
+  ],
+  "homepage": "https://github.com/devolite/openapi-fetch-angular",
+  "repository": "github:devolite/openapi-fetch-angular",
+  "bugs": {
+    "url": "https://github.com/devolite/openapi-fetch-angular/issues"
+  },
+  "peerDependencies": {
+    "@angular/common": "^17.3.0",
+    "@angular/core": "^17.3.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}
