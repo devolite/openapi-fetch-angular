@@ -1,0 +1,19 @@
+name: Node CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --frozen-lockfile
+      - run: npm run lint
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install --frozen-lockfile
+      - run: npm run test
