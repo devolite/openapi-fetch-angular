@@ -29,6 +29,13 @@
           "options": {
             "tsConfig": "projects/openapi-fetch-angular/tsconfig.spec.json",
             "polyfills": ["zone.js", "zone.js/testing"]
+          },
+          "configurations": {
+            "ci": {
+              "watch": false,
+              "progress": false,
+              "browsers": "ChromeHeadless"
+            }
           }
         },
         "lint": {
