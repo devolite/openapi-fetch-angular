@@ -1,5 +1,6 @@
 import { HttpHeaders } from '@angular/common/http';
 import {
+  HeadersOptions,
   QuerySerializer,
   QuerySerializerOptions,
 } from './openapi-client.types';
@@ -201,20 +202,26 @@ export const serializeObjectParam = (
 };
 
 export const mergeHeaders = (
-  ...allHeaders: (HttpHeaders | undefined)[]
-): HttpHeaders => {
-  let headers = new HttpHeaders();
-  for (const h of allHeaders) {
-    if (h) {
-      for (const key of h.keys()) {
-        const v = h.get(key);
-        if (v) {
-          headers = headers.append(key, v);
-        }
-      }
+  ...allHeaders: (HeadersOptions | undefined)[]
+): HeadersOptions => {
+  return allHeaders.reduce<HeadersOptions>((acc, headers) => {
+    if (!headers) {
+      return acc;
     }
+    for (const key in headers) {
+      acc[key] = headers[key];
+    }
+    return acc;
+  }, {});
+};
+
+export const convertHeaders = (headers?: HeadersOptions): HttpHeaders => {
+  let httpHeaders = new HttpHeaders();
+  for (const key in headers) {
+    if (!headers[key]) continue;
+    httpHeaders = httpHeaders.set(key, headers[key] as string);
   }
-  return headers;
+  return httpHeaders;
 };
 
 export const defaultPathSerializer = (

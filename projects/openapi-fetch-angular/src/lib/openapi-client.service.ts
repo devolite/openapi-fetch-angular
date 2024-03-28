@@ -1,7 +1,6 @@
 import {
   HttpClient,
   HttpErrorResponse,
-  HttpHeaders,
   HttpRequest,
   HttpResponse,
 } from '@angular/common/http';
@@ -13,15 +12,16 @@ import {
   FetchOptions,
 } from './openapi-client.types';
 import {
+  convertHeaders,
   createFinalURL,
   createQuerySerializer,
   mergeHeaders,
 } from './openapi-serializer';
 import { catchError, filter, lastValueFrom, map, of } from 'rxjs';
 
-export const DEFAULT_HEADERS = new HttpHeaders({
+export const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
-});
+};
 
 @Injectable({
   providedIn: 'root',
@@ -92,7 +92,9 @@ export abstract class OpenAPIClientService<Paths extends {}> {
       const requestInit = {
         ...baseOptions,
         ...init,
-        headers: mergeHeaders(baseHeaders, headers, params.headers),
+        headers: convertHeaders(
+          mergeHeaders(baseHeaders, headers, params.header),
+        ),
       };
 
       const request = new HttpRequest(
@@ -160,7 +162,9 @@ export abstract class OpenAPIClientService<Paths extends {}> {
       const requestInit = {
         ...baseOptions,
         ...init,
-        headers: mergeHeaders(baseHeaders, headers, params.headers),
+        headers: convertHeaders(
+          mergeHeaders(baseHeaders, headers, params.header),
+        ),
       };
 
       const request = new HttpRequest(

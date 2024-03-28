@@ -103,6 +103,131 @@ describe('OpenAPIClientService', () => {
         expect(httpMock.expectOne('/query-params?string=10')).toBeDefined();
       });
     });
+
+    describe('headers', () => {
+      it('should correctly type the headers', () => {
+        service
+          // @ts-expect-error - missing required parameter
+          .get('/header-params')
+          .subscribe(({ response }) => expect(response).toBeDefined());
+        let req = httpMock.expectOne('/header-params');
+        expect(req).toBeDefined();
+
+        service
+          .get('/header-params', {
+            // @ts-expect-error - empty object
+            params: {},
+          })
+          .subscribe(({ response }) => expect(response).toBeDefined());
+        req = httpMock.expectOne('/header-params');
+        expect(req).toBeDefined();
+
+        service
+          .get('/header-params', {
+            params: {
+              header: {
+                // @ts-expect-error - wrong type
+                'x-required-header': 123,
+              },
+            },
+          })
+          .subscribe(({ response }) => expect(response).toBeDefined());
+        req = httpMock.expectOne('/header-params');
+        expect(req).toBeDefined();
+
+        service
+          .get('/header-params', {
+            params: {
+              header: {
+                'x-required-header': '123',
+              },
+            },
+          })
+          .subscribe(({ response }) => expect(response).toBeDefined());
+        req = httpMock.expectOne('/header-params');
+        expect(req).toBeDefined();
+      });
+
+      it('should correctly send headers', () => {
+        service
+          .get('/header-params', {
+            params: {
+              header: {
+                'x-required-header': '123',
+              },
+            },
+          })
+          .subscribe(({ response }) =>
+            expect(response.headers.get('x-required-header-server')).toEqual(
+              '123',
+            ),
+          );
+        const req = httpMock.expectOne('/header-params');
+
+        expect(req.request.headers.get('Content-Type')).toEqual(
+          'application/json',
+        );
+        expect(req.request.headers.get('x-required-header')).toEqual('123');
+
+        req.flush(null, { headers: { 'x-required-header-server': '123' } });
+      });
+    });
+
+    describe('headers (promise)', () => {
+      it('should correctly type the headers', () => {
+        // @ts-expect-error - missing required parameter
+        service.getPromise('/header-params');
+        expect(httpMock.expectOne('/header-params')).toBeDefined();
+
+        service.getPromise('/header-params', {
+          // @ts-expect-error - empty object
+          params: {},
+        });
+        expect(httpMock.expectOne('/header-params')).toBeDefined();
+
+        service.getPromise('/header-params', {
+          params: {
+            header: {
+              // @ts-expect-error - wrong type
+              'x-required-header': 123,
+            },
+          },
+        });
+        expect(httpMock.expectOne('/header-params')).toBeDefined();
+
+        service.getPromise('/header-params', {
+          params: {
+            header: {
+              'x-required-header': '123',
+            },
+          },
+        });
+        expect(httpMock.expectOne('/header-params')).toBeDefined();
+      });
+
+      it('should correctly send headers', () => {
+        service
+          .getPromise('/header-params', {
+            params: {
+              header: {
+                'x-required-header': '123',
+              },
+            },
+          })
+          .then(({ response }) =>
+            expect(response.headers.get('x-required-header-server')).toEqual(
+              '123',
+            ),
+          );
+        const req = httpMock.expectOne('/header-params');
+
+        expect(req.request.headers.get('Content-Type')).toEqual(
+          'application/json',
+        );
+        expect(req.request.headers.get('x-required-header')).toEqual('123');
+        req.flush(null, { headers: { 'x-required-header-server': '123' } });
+      });
+    });
   });
 
   describe('body', () => {

@@ -1,4 +1,4 @@
-import { HttpHeaders, HttpRequest, HttpResponse } from '@angular/common/http';
+import { HttpRequest, HttpResponse } from '@angular/common/http';
 import {
   ErrorResponse,
   FilterKeys,
@@ -35,7 +35,10 @@ export interface ClientOptions
   headers?: HeadersOptions;
 }
 
-export type HeadersOptions = HttpHeaders;
+export type HeadersOptions = Record<
+  string,
+  string | number | boolean | (string | number | boolean)[] | null | undefined
+>;
 
 export type ParamsOption<T> = T extends {
   parameters: any;
@@ -67,7 +70,7 @@ export type RequestBodyOption<T> =
 export type RequestOptions<T> = ParamsOption<T> &
   RequestBodyOption<T> & {
     querySerializer?: QuerySerializer<T> | QuerySerializerOptions;
-    headers?: HttpHeaders;
+    headers?: HeadersOptions;
   };
 
 export type FetchOptions<T> = RequestOptions<T> &
